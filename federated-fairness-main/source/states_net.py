@@ -227,7 +227,7 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
             # Comparing the predicted to the inputs in order to determine EOD
             matched = (predicted == labels)
             matched=torch.flatten(matched)
-            sex = data[sens_att]
+            sex =data[sens_att].to(DEVICE)
             l=0
             for label in sensitive_labels:
 
@@ -246,7 +246,7 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
                 l = l + 1
             total += labels.size(0)
             correct += matched.sum().item()
-            comp = data[comp_att]
+            comp = data[comp_att].to(DEVICE)
             l = 0
             for label in sensitive_labels:
                 lab = (labels == label[0])

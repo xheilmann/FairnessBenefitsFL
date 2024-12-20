@@ -87,7 +87,7 @@ def compute_disparity(
     return disparities, combinations
 
 
-path = "/home/heilmann/Dokumente/Multiple Objective FL/sampled_data"
+path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data"
 dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv', 'TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
 print(dirs)
 
@@ -112,11 +112,11 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr):
     """
     # Download and transform CIFAR-10 (train and test)
     # Loading the central testset:
-    testset =pd.read_csv("/home/heilmann/Dokumente/Multiple Objective FL/sampled_data/WY.csv")
+    testset =pd.read_csv("/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data/WY.csv")
     normalized_test= (testset - testset.min()) / (testset.max() - testset.min())
     normalized_test[">50K"]=testset[">50K"]
     # Divide data on each node: 90% train, 10% validation
-    test = Dataset.from_pandas(normalized_test, preserve_index=False)
+    test = Dataset.from_pandas(normalized_test.loc[1:500], preserve_index=False)
     testloader= DataLoader(test, batch_size=b_size, shuffle=True)
     features = test.features
 

@@ -66,7 +66,7 @@ def dataGenerate(seed = 432, train_samples = 3000, test_samples = 500,
     return dataSplit(train_data, test_data, client_split, Z)
 
 synthetic_info = dataGenerate(seed = 123, test_samples = 1500, train_samples = 3500)
-
+'''
 # Adult
 sensitive_attributes = ['sex']
 categorical_attributes = ['workclass', 'education', 'marital-status', 'occupation', 'relationship', 'race', 'native-country']
@@ -218,3 +218,4 @@ bank_train = LoadData(train, label_name, 'z')
 bank_test = LoadData(test, label_name, 'z')
 
 bank_info = [bank_train, bank_test, clients_idx]
+'''

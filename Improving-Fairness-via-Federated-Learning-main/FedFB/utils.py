@@ -369,7 +369,7 @@ def process_csv(dir_name, filename, label_name, favorable_class, sensitive_attri
     only support binary sensitive attributes -> [gender, race] -> 4 sensitive groups 
     """
 
-    df = pd.read_csv(os.path.join('../FedFB', dir_name, filename), delimiter = ',', header = header, na_values = na_values, dtype="float32")
+    df = pd.read_csv(os.path.join('/home/heilmann/Dokumente/MultipleObjectiveFL/Improving-Fairness-via-Federated-Learning-main/FedFB', dir_name, filename), delimiter = ',', header = header, na_values = na_values, dtype="float32")
     if header == None: df.columns = columns
     df = df[features_to_keep]
 

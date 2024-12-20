@@ -115,8 +115,8 @@ def sim_dp(method, model, synthetic_info, num_sim = 5, seed = 0, resources_per_t
     elif method == 'fedfb':
         print('--------------------------------Hyperparameter selection--------------------------------')
         print('--------------------------------Seed:' + str(seed) + '--------------------------------')
-        config = {'lr': tune.grid_search([.001, .005, .01]),
-                'alpha': tune.grid_search([.001, .05, .08, .1, .2, .5, 1, 2])}
+        config = {'lr': tune.grid_search([.0001, .0005]),
+                'alpha': tune.grid_search([ .05, .08])}
 
         def trainable(config): 
             return run_dp(method = method, model = model, synthetic_info = synthetic_info, prn = False, trial = True, seed = seed, learning_rate = config['lr'], alpha = config['alpha'], **kwargs)

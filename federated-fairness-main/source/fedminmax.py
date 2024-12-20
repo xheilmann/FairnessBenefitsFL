@@ -259,7 +259,9 @@ class FedMinMax(Strategy):
             # Reassigning the weighing coefficients (projected gradient ascent to maximise objective)
             # Using Euclidean projection from: https://doi.org/10.1145/1390156.1390191
             cum_risks = [np.sum([a[i] for a in self.risks]) for i in range(len(self.sensitive_attributes))]
+            print(f"cum_risks:{cum_risks}")
             avg_risks = -1*self.adverse_lr * np.array([(cum_risks[i] / self.total_sensitive[i]) for i in range(len(self.sensitive_attributes))])
+            print(f"avg_risks:{avg_risks}")
             # projection operation and calculations
             gradients = np.flip(np.array(np.sort(avg_risks))) # the derivative of the function w.r.t the weights that is maximised in the strategy gives the avg risks, sorted high to low
             rho_array = []
@@ -275,6 +277,7 @@ class FedMinMax(Strategy):
             else:
                 r = len(self.sensitive_attributes)
             theta = (1/r) * np.sum(gradients[0:r]-z)
+            print(f"theta:{theta}")
             self.mu = [max(x-theta, 0) for x in (avg_risks)] # change this - to + if it doesnt work!
         print("mu", self.mu)
         # calculate the weights:

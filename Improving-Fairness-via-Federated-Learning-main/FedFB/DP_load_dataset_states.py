@@ -7,7 +7,7 @@ import torch
 
 def read_data(dataset):
     if dataset == "states_income_sex":
-        Z = 20
+        Z = 6
         # states income sex
         sensitive_attributes = ['SEX']
         categorical_attributes = []

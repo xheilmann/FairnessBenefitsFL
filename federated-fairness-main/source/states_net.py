@@ -138,6 +138,7 @@ def train(net, trainloader, epochs: int, option = None, sens_attr="SEX"):
 
             loss.backward()
             if option is not None:
+
                 if option["opt"] == "ditto":
                     ditto_manual_update(option["eta"], option["lambda"], option["global_params"])
                 if option["opt"] == "fedminmax":
@@ -167,7 +168,9 @@ def train(net, trainloader, epochs: int, option = None, sens_attr="SEX"):
                             number_sensitive[2] += 1
 
                     # Testing the mini datasets to determine the risks:
+
                     for s in range(len(sensitive_attributes)):
+                        #print(subsets[s])
                         if subsets[s] == []:
                             continue
                         lbls = torch.Tensor([sensitive_attributes[s][0] for img in range(len(subsets[s]))]).double().to(DEVICE)
@@ -175,9 +178,13 @@ def train(net, trainloader, epochs: int, option = None, sens_attr="SEX"):
                         subset_loss = criterion(net(inpt).squeeze(1), lbls)
                         subset_losses[s] += float(subset_loss)
                     # Calculating the key risk parameters
+                    #print(lbls, inpt, subset_loss, subset_losses)
                     risks = np.nan_to_num(np.array(subset_losses))
+                    print(f"risks:{risks}")
                     sum_risks += risks
+                    print(f"sumrisks:{sum_risks}")
                     risk = np.sum((np.array(option["w"]) * risks) / batch_size)
+                    print(f"risk:{risk}")
                     fedminmax_manual_update(option["lr"], risk)
             else:
                 optimizer.step()

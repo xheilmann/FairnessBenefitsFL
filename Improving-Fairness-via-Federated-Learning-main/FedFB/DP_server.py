@@ -201,7 +201,7 @@ class Server(object):
 
         if self.ret: return test_acc, rd, self.model
 
-    def FedFB(self, num_rounds = 10, local_epochs = 10, learning_rate = 0.005, optimizer = 'adam', alpha = 0.3, bits = False):
+    def FedFB(self, num_rounds = 10, local_epochs = 30, learning_rate = 0.001, optimizer = 'adam', alpha = 0.08, bits = False):
         # only support 2 groups
         # if self.Z == 2 and bits is None:
         #     # new algorithm for demographic parity, add weights directly, signed gradient-based algorithm

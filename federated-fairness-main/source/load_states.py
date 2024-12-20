@@ -87,9 +87,13 @@ def compute_disparity(
     return disparities, combinations
 
 
-path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data"
-#dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
-dirs=['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
+path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/employment_data_unfair"
+#directory for states income in order as in graph (first 10 SEX, other MAR)
+#dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv','TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
+
+#directory for states employment in order as in graph (first 10 SEX, other MAR)
+dirs = ['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv','RI.csv', 'CT.csv', 'NM.csv', 'CO.csv','UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv', 'WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
+
 print(dirs)
 
 
@@ -113,9 +117,9 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr):
     """
     # Download and transform CIFAR-10 (train and test)
     # Loading the central testset:
-    testset =pd.read_csv("/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data/WY.csv")
+    testset =pd.read_csv("/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/employment_data_unfair/IL.csv")
     normalized_test= (testset - testset.min()) / (testset.max() - testset.min())
-    normalized_test[">50K"]=testset[">50K"]
+    normalized_test["ESR"]=testset["ESR"]
     # Divide data on each node: 90% train, 10% validation
     test = Dataset.from_pandas(normalized_test, preserve_index=False)
     testloader= DataLoader(test, batch_size=b_size, shuffle=True)
@@ -129,7 +133,7 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr):
         df = pd.read_csv(path+"/"+file)
         sensitive_attributes_list = np.array(list(df[sens_attr]))
         comp_attributes_list = np.array(list(df[comp_attr]))
-        targets_list = np.array(list(df[">50K"]))
+        targets_list = np.array(list(df["ESR"]))
 
         possible_sensitive_attributes = list(set(sensitive_attributes_list))
         possible_comp_attributes = list (set(comp_attributes_list))
@@ -153,7 +157,7 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr):
         #wandb.log({f"{file}_initial_disparity_{comp_attr}":disparities})
 
         normalized_df = (df - df.min()) / (df.max() - df.min())
-        normalized_df[">50K"] = df[">50K"]
+        normalized_df["ESR"] = df["ESR"]
         # Divide data on each node: 90% train, 10% validation
         train, test = train_test_split(normalized_df, test_size=0.1)
         partition_train = Dataset.from_pandas(train, preserve_index=False)

@@ -126,8 +126,12 @@ def train(net, trainloader, epochs: int, option = None, sens_attr="SEX"):
         correct, total, epoch_loss = 0, 0, 0.0
 
         for data in trainloader:
-            labels = (torch.Tensor([[x] for x in data[">50K"]]).double()).to(DEVICE)
-            data.pop(">50K")
+            if "ESR" in data:
+                label_name = "ESR"
+            else:
+                label_name = ">50K"  # accounts for NSL-KDD
+            labels = (torch.Tensor([[x] for x in data[label_name]]).double()).to(DEVICE)
+            data.pop(label_name)
             inputs = torch.from_numpy(np.array([values.numpy() for key,values in data.items()], dtype=float)).to(DEVICE)
             inputs = inputs.mT # transpose required
             batch_size = len(labels)
@@ -224,8 +228,12 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
     net.eval()
     with torch.no_grad():
         for data in testloader:
-            labels = (torch.Tensor([[x] for x in data[">50K"]]).double()).to(DEVICE)
-            data.pop(">50K")
+            if "ESR" in data:
+                label_name = "ESR"
+            else:
+                label_name= ">50K" # accounts for NSL-KDD
+            labels = (torch.Tensor([[x] for x in data[label_name]]).double()).to(DEVICE)
+            data.pop(label_name)
             inputs = torch.from_numpy(np.array([values.numpy() for key,values in data.items()], dtype=float)).to(DEVICE)
             inputs = inputs.mT # transpose required
             outputs = net(inputs)

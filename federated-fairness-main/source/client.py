@@ -97,14 +97,14 @@ class FlowerClient(fl.client.NumPyClient):
         # Checking client dataset length without assuming batch size
         dataset_length = 0
         for data in trainloader:
-            if "label" in data:
-                labels = data["label"]
+            if "ESR" in data:
+                labels = data["ESR"]
             else:
                 labels = data[">50K"] # accounts for NSL-KDD
             dataset_length += len(labels)
         for data in valloader:
-            if "label" in data:
-                labels = data["label"]
+            if "ESR" in data:
+                labels = data["ESR"]
             else:
                 labels = data[">50K"] # accounts for NSL-KDD
             dataset_length += len(labels)

@@ -100,8 +100,8 @@ def data_preprocess(num_clients, trainloaders, valloaders, sensitive_attributes,
         print(f"Preprocessing client {i}")
         # Parsing the individual datasets:
         for data in trainloaders[i]:
-            if "label" in data:
-                labels = data["label"]
+            if "ESR" in data:
+                labels = data["ESR"]
             else:
                 labels = data[">50K"] # accounts for states
                 sex = data[sens_att]
@@ -117,8 +117,8 @@ def data_preprocess(num_clients, trainloaders, valloaders, sensitive_attributes,
                 num_total_sensitive_samples[s]+= matched
 
         for data in valloaders[i]:
-            if "label" in data:
-                labels = data["label"]
+            if "ESR" in data:
+                labels = data["ESR"]
             else:
                 labels = data[">50K"]  # accounts for states
                 sex = data[sens_att]

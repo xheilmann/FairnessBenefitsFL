@@ -90,7 +90,7 @@ print(
 
 
 # Key parameter and data storage variables:
-NUM_CLIENTS = 10
+NUM_CLIENTS = 20
 LOCAL_EPOCHS = 30
 NUM_ROUNDS = 10
 BATCH_SIZE = 528

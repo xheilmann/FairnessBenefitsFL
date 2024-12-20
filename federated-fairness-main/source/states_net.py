@@ -72,7 +72,7 @@ class Net(nn.Module):
     def __init__(self) -> None:
         super(Net, self).__init__()
         # Needs to start with input space as wide as preprocessed inputs, 123 wide including the class label
-        self.layer1 = nn.Linear(10, 100, dtype=torch.float64)
+        self.layer1 = nn.Linear(16, 100, dtype=torch.float64)
         self.act1 = nn.ReLU()
         self.layer2 = nn.Linear(100, 100, dtype=torch.float64)
         self.act2 = nn.ReLU()

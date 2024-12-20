@@ -86,11 +86,11 @@ print(
 )
 
 # Key parameter and data storage variables:
-NUM_CLIENTS = 20
+NUM_CLIENTS = 10
 LOCAL_EPOCHS = 30
 NUM_ROUNDS = 10
 BATCH_SIZE = 528
-SELECTION_RATE = 0.9 # what proportion of clients are selected per round
+SELECTION_RATE = 1.0 # what proportion of clients are selected per round
 SENSITIVE_ATTRIBUTES = [(0,0), (0,1), (1,0), (1,1)]
 SENS_ATT = "MAR"
 COMP_ATT= "SEX"

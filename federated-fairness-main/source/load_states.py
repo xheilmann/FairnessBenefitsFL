@@ -88,7 +88,8 @@ def compute_disparity(
 
 
 path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data"
-dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv', 'TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
+#dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
+dirs=['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
 print(dirs)
 
 

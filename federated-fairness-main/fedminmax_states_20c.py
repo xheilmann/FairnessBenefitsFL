@@ -90,11 +90,11 @@ print(
 
 
 # Key parameter and data storage variables:
-NUM_CLIENTS = 6
+NUM_CLIENTS = 10
 LOCAL_EPOCHS = 30
 NUM_ROUNDS = 10
-BATCH_SIZE = 258
-SELECTION_RATE = 1.0# what proportion of clients are selected per round
+BATCH_SIZE = 528
+SELECTION_RATE = 1.0 # what proportion of clients are selected per round
 SENSITIVE_ATTRIBUTES = [(0,0), (0,1), (1,0), (1,1)]
 SENS_ATT = "MAR"
 COMP_ATT= "SEX"
@@ -128,7 +128,7 @@ data = {
       "stats":[],
       "stats_comp":[]}}
 
-#wandb.init(project="multiobj-FL", config=data["config"])
+wandb.init(project="multiobj-FL", config=data["config"])
 
 
 # Key experiment specific functions:
@@ -189,7 +189,7 @@ def fit_callback(metrics: List[Tuple[int, Metrics]]) -> Metrics:
       client_list.append(cid)
       print(cid)
     #if True:
-      #shap.fedSV(clients, parameters)
+    #  shap.fedSV(clients, parameters)
     # Jain's fairness index (JFI) is used to evaluate uniformity for the fairness metrics
     JFI = lambda x: ((np.sum(x)**2) / (len(x) * np.sum(x**2)))
     # We determine individual fairness using the FedEval accuracy and JFI
@@ -261,8 +261,8 @@ def fit_callback(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     data["per_client_data"]["gains"].append(gains)
     data["per_client_data"]["stats"].append(stats)
     data["per_client_data"]["stats_comp"].append(stats_comp)
-    #wandb.log({"global_acc":f_o, "disparity":max(f_g),"client_acc":accuracy, "global_sens_fairness":f_g ,"global_comp_fairness":f_comp_g,
-     #           "client_comp_fairness": comp_eop, "client_stats":stats, "client_comp_stats":stats_comp}, step=shap.round)
+    wandb.log({"global_acc":f_o,"disparity":np.max(f_g), "client_acc":accuracy, "global_sens_fairness":f_g ,"global_comp_fairness":f_comp_g,
+                "client_comp_fairness": comp_eop, "client_stats":stats, "client_comp_stats":stats_comp}, step=shap.round)
     return {"f_j": f_j, "f_g": f_g, "f_r": f_r, "f_o": f_o}
 
 

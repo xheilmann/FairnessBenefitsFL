@@ -118,11 +118,14 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr):
     # Download and transform CIFAR-10 (train and test)
     # Loading the central testset:
     testset =pd.read_csv("/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/employment_data_unfair/IL.csv")
+    testset.pop("RAC1P")
     normalized_test= (testset - testset.min()) / (testset.max() - testset.min())
     normalized_test["ESR"]=testset["ESR"]
     # Divide data on each node: 90% train, 10% validation
     test = Dataset.from_pandas(normalized_test, preserve_index=False)
+
     testloader= DataLoader(test, batch_size=b_size, shuffle=True)
+
     features = test.features
 
     trainloaders = []
@@ -131,6 +134,8 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr):
     for file in dirs:
         print(file)
         df = pd.read_csv(path+"/"+file)
+        df.pop("RAC1P")
+
         sensitive_attributes_list = np.array(list(df[sens_attr]))
         comp_attributes_list = np.array(list(df[comp_attr]))
         targets_list = np.array(list(df["ESR"]))

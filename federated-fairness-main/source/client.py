@@ -132,6 +132,8 @@ class FlowerClient(fl.client.NumPyClient):
         server_round = config["server_round"]
         local_epochs = config["local_epochs"]
         sensitive_attributes = config["sensitive_attributes"]
+        sens_att = config["sens_att"]
+        comp_att = config["comp_att"]
         # Detecting the strategy on the first round and setting a flag:
         if self.per_params == None:
             if "ditto" in config: # Initialising personalised params to be global
@@ -156,7 +158,7 @@ class FlowerClient(fl.client.NumPyClient):
             self.per_params = get_parameters(self.net)
         elif "fedminmax" in config:
             opts = config["fedminmax"]
-            returns = self.train(self.net, self.trainloader, epochs=local_epochs, option = opts)
+            returns = self.train(self.net, self.trainloader, epochs=local_epochs, option = opts, sens_att = sens_att, comp_att=comp_att)
             params = get_parameters(self.net)
             self.risks = returns["fedminmax_risks"] # is return to the server to update weighing coefficients
         else: # Default case

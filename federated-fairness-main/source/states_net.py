@@ -72,7 +72,7 @@ class Net(nn.Module):
     def __init__(self) -> None:
         super(Net, self).__init__()
         # Needs to start with input space as wide as preprocessed inputs, 123 wide including the class label
-        self.layer1 = nn.Linear(16, 100, dtype=torch.float64)
+        self.layer1 = nn.Linear(13, 100, dtype=torch.float64)
         self.act1 = nn.ReLU()
         self.layer2 = nn.Linear(100, 100, dtype=torch.float64)
         self.act2 = nn.ReLU()
@@ -89,7 +89,7 @@ class Net(nn.Module):
         x = self.sigmoid(self.output(x))
         return x
 
-def train(net, trainloader, epochs: int, option = None, sens_attr="SEX"):
+def train(net, trainloader, epochs: int, option = None, sens_att="SEX", comp_att="MAR"):
     """
     Train the network on the training set.
     
@@ -132,6 +132,10 @@ def train(net, trainloader, epochs: int, option = None, sens_attr="SEX"):
                 label_name = ">50K"  # accounts for NSL-KDD
             labels = (torch.Tensor([[x] for x in data[label_name]]).double()).to(DEVICE)
             data.pop(label_name)
+            sex = data[sens_att].to(DEVICE)
+            data.pop(sens_att)
+            data.pop(comp_att)
+
             inputs = torch.from_numpy(np.array([values.numpy() for key,values in data.items()], dtype=float)).to(DEVICE)
             inputs = inputs.mT # transpose required
             batch_size = len(labels)
@@ -158,7 +162,7 @@ def train(net, trainloader, epochs: int, option = None, sens_attr="SEX"):
                     for l in range(batch_size):
                         try:
                             i = sens_labels.index(int(labels[l]))
-                            j= sens_sex.index(data[sens_attr][l])
+                            j= sens_sex.index(sex[l])
                         except:
                             continue
                         if (i+j)==0 or (i+j)==2:
@@ -234,6 +238,10 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
                 label_name= ">50K" # accounts for NSL-KDD
             labels = (torch.Tensor([[x] for x in data[label_name]]).double()).to(DEVICE)
             data.pop(label_name)
+            sex = data[sens_att].to(DEVICE)
+            data.pop(sens_att)
+            comp = data[comp_att].to(DEVICE)
+            data.pop(comp_att)
             inputs = torch.from_numpy(np.array([values.numpy() for key,values in data.items()], dtype=float)).to(DEVICE)
             inputs = inputs.mT # transpose required
             outputs = net(inputs)
@@ -242,7 +250,7 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
             # Comparing the predicted to the inputs in order to determine EOD
             matched = (predicted == labels)
             matched=torch.flatten(matched)
-            sex =data[sens_att].to(DEVICE)
+
             l=0
             for label in sensitive_labels:
 
@@ -261,7 +269,6 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
                 l = l + 1
             total += labels.size(0)
             correct += matched.sum().item()
-            comp = data[comp_att].to(DEVICE)
             l = 0
             for label in sensitive_labels:
                 lab = (labels == label[0])

@@ -69,10 +69,10 @@ class Net(nn.Module):
     A linear model consisting of four fully connected layers:
     Design influenced by: https://machinelearningmastery.com/building-a-binary-classification-model-in-pytorch/ 
     """
-    def __init__(self) -> None:
+    def __init__(self, in_feat) -> None:
         super(Net, self).__init__()
         # Needs to start with input space as wide as preprocessed inputs, 123 wide including the class label
-        self.layer1 = nn.Linear(13, 100, dtype=torch.float64)
+        self.layer1 = nn.Linear(in_feat, 100, dtype=torch.float64)
         self.act1 = nn.ReLU()
         self.layer2 = nn.Linear(100, 100, dtype=torch.float64)
         self.act2 = nn.ReLU()

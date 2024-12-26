@@ -46,6 +46,7 @@ limitations under the License.
 
 -------------------------------------------------------------------------------------------------------------
 """
+import argparse
 import ast
 # Library imports
 # from collections import OrderedDict
@@ -85,22 +86,43 @@ print(
     f"Training on {DEVICE} using PyTorch {torch.__version__} and Flower {fl.__version__}"
 )
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--num-clients', default = 20, help='number of FL clients', type= int)
+parser.add_argument('--epochs', help = "epochs for  local training", default = 30, type=int)
+parser.add_argument('--rounds', default = 10, type= int)
+parser.add_argument('--selection-rate', type = float, default= 1.0,  help='proportion of clients selected in each round of training')
+parser.add_argument('--sensitive-attribute', type= str, default="MAR", help='name of the sensitive attributes')
+parser.add_argument('--comp-attribute',  type= str, default="SEX",  help='name of the comparision attributes')
+parser.add_argument("--fedminmax-lr", default = 0.002, help="value of overall lr", type = float)
+parser.add_argument("--fedminmax-adverse-lr", default = 0.01, help="value of local lr", type= float)
+parser.add_argument("--dataset-name", type=str, default="income", help="name of the dataset")
+parser.add_argument("--batch-size", default=528, type=int, help="batch size for training")
+parser.add_argument("--cluster", default=0, type=int, help="cluster = 0 all clients, cluster = 1 clients that are unfair towrads SEX, cluster=2 clients that are unfair towards MAR")
+
+opt = parser.parse_args()
 
 
 
 
 # Key parameter and data storage variables:
-NUM_CLIENTS = 10
-LOCAL_EPOCHS = 30
-NUM_ROUNDS = 10
-BATCH_SIZE = 528
-SELECTION_RATE = 1.0 # what proportion of clients are selected per round
+NUM_CLIENTS = opt.num_clients
+LOCAL_EPOCHS = opt.epochs
+NUM_ROUNDS = opt.rounds
+BATCH_SIZE = opt.batch_size
+SELECTION_RATE = opt.selection_rate # what proportion of clients are selected per round
 SENSITIVE_ATTRIBUTES = [(0,0), (0,1), (1,0), (1,1)]
-SENS_ATT = "MAR"
-COMP_ATT= "SEX"
-FEDMINMAX_LR = 0.002
-FEDMINMAX_ADVERSE_LR = 0.01
+SENS_ATT = opt.sensitive_attribute
+COMP_ATT= opt.comp_attribute
+FEDMINMAX_LR = opt.fedminmax_lr
+FEDMINMAX_ADVERSE_LR = opt.fedminmax_adverse_lr
+cluster = opt.cluster
 path_extension = f'FedMinMax_states_iid_{NUM_CLIENTS}C_{int(SELECTION_RATE * 20)}PC_{LOCAL_EPOCHS}E_{NUM_ROUNDS}R'
+dataset_name =opt.dataset_name
+
+if dataset_name == "income":
+    in_feat= 7
+else:
+    in_feat = 13
 data = {
     "rounds": [],
     "general_fairness": {
@@ -117,7 +139,11 @@ data = {
           "selection_rate": SELECTION_RATE,
           "sensitive_attributes": SENSITIVE_ATTRIBUTES,
           "sens_att":SENS_ATT,
-          "comp_att":COMP_ATT
+          "comp_att":COMP_ATT,
+          "cluster":cluster,
+          "datasetname":dataset_name,
+          "fedminmax_lr": FEDMINMAX_LR,
+          "fedminmax_adverse_lr": FEDMINMAX_ADVERSE_LR
           },
       "per_client_data": {
             "shap": [],
@@ -136,7 +162,7 @@ def client_fn(cid) -> FlowerClient:
     """
     Instances of clients are only created when required to avoid depleting RAM.
     """
-    net = Net().to(DEVICE)
+    net = Net(in_feat).to(DEVICE)
     trainloader = trainloaders[int(cid)]
     valloader = valloaders[int(cid)]
     return FlowerClient(cid, net, trainloader, valloader, test, train)
@@ -161,7 +187,7 @@ def evaluate(server_round: int,
     Used for centralised evaluation. This is enacted by flower before the Federated Evaluation.
     Runs initially before FL begins as well.
     """
-    net = Net().to(DEVICE)
+    net = Net(in_feat).to(DEVICE)
     shap.aggregatedRoundParams = parameters
     set_parameters(net, parameters)
     loss, accuracy, _,_,_,_ = test(net, testloader)
@@ -267,9 +293,9 @@ def fit_callback(metrics: List[Tuple[int, Metrics]]) -> Metrics:
 
 
 # Gathering the data:
-trainloaders, valloaders, testloader, _ = load_iid(NUM_CLIENTS, BATCH_SIZE, SENS_ATT, COMP_ATT)
+trainloaders, valloaders, testloader, _ = load_iid(NUM_CLIENTS, BATCH_SIZE, SENS_ATT, COMP_ATT, dataset_name, cluster)
 # Creating Shapley instance:
-shap = Shapley(testloader, test, set_parameters, NUM_CLIENTS, Net().to(DEVICE))
+shap = Shapley(testloader, test, set_parameters, NUM_CLIENTS, Net(in_feat).to(DEVICE))
 # Create FedAvg strategy:
 strategy = FedMinMax(
     lr = FEDMINMAX_LR,
@@ -284,7 +310,7 @@ strategy = FedMinMax(
     min_evaluate_clients=int(NUM_CLIENTS*SELECTION_RATE), # never sample less than this for evaluation
     min_available_clients=NUM_CLIENTS, # has to wait until all clients are available
     # Passing initial_parameters prevents flower asking a client:
-    initial_parameters=fl.common.ndarrays_to_parameters(get_parameters(Net())),
+    initial_parameters=fl.common.ndarrays_to_parameters(get_parameters(Net(in_feat))),
     # Called whenever fit or evaluate metrics are received from clients:
     fit_metrics_aggregation_fn = fit_callback,
     # Evaluate function is called by flower every round for central evaluation:

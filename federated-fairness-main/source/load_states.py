@@ -100,7 +100,7 @@ print(dirs)
 
 
 
-def load_iid(num_clients, b_size, sens_attr, comp_attr):
+def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
     """
     Load iid split
 
@@ -117,58 +117,134 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr):
     """
     # Download and transform CIFAR-10 (train and test)
     # Loading the central testset:
-    testset =pd.read_csv("/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/employment_data_unfair/IL.csv")
-    testset.pop("RAC1P")
-    normalized_test= (testset - testset.min()) / (testset.max() - testset.min())
-    normalized_test["ESR"]=testset["ESR"]
-    # Divide data on each node: 90% train, 10% validation
-    test = Dataset.from_pandas(normalized_test, preserve_index=False)
+    if dataset=="employment":
+        path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/employment_data_unfair"
+        if cluster ==0:
+            dirs = ['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv',
+                    'UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv', 'WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
+        elif cluster ==1:
+            dirs = ['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
+                   
+        elif cluster ==2:
+            dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv', 'WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
 
-    testloader= DataLoader(test, batch_size=b_size, shuffle=True)
-
-    features = test.features
-
-    trainloaders = []
-    valloaders = []
-    # Looping through each client, splitting train into train and val and turning into Pytorch DataLoader
-    for file in dirs:
-        print(file)
-        df = pd.read_csv(path+"/"+file)
-        df.pop("RAC1P")
-
-        sensitive_attributes_list = np.array(list(df[sens_attr]))
-        comp_attributes_list = np.array(list(df[comp_attr]))
-        targets_list = np.array(list(df["ESR"]))
-
-        possible_sensitive_attributes = list(set(sensitive_attributes_list))
-        possible_comp_attributes = list (set(comp_attributes_list))
-        possible_targets = list(set(targets_list))
-
-        disparities, combinations = compute_disparity(
-            sensitive_attributes=sensitive_attributes_list,
-            targets=targets_list,
-            possible_sensitive_attributes=possible_sensitive_attributes,
-            possible_targets=possible_targets
-        )
-        print(sens_attr, disparities, combinations)
-        #wandb.log({f"{file}_initial_disparity_{sens_attr}": disparities})
-        disparities, combinations = compute_disparity(
-            sensitive_attributes=comp_attributes_list,
-            targets=targets_list,
-            possible_sensitive_attributes=possible_comp_attributes,
-            possible_targets=possible_targets
-        )
-        print(comp_attr, disparities, combinations)
-        #wandb.log({f"{file}_initial_disparity_{comp_attr}":disparities})
-
-        normalized_df = (df - df.min()) / (df.max() - df.min())
-        normalized_df["ESR"] = df["ESR"]
+        print(dirs)
+        testset =pd.read_csv("/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/employment_data_unfair/IL.csv")
+        testset.pop("RAC1P")
+        normalized_test= (testset - testset.min()) / (testset.max() - testset.min())
+        normalized_test["ESR"]=testset["ESR"]
         # Divide data on each node: 90% train, 10% validation
-        train, test = train_test_split(normalized_df, test_size=0.1)
-        partition_train = Dataset.from_pandas(train, preserve_index=False)
-        partition_test = Dataset.from_pandas(test, preserve_index=False)
-        trainloaders.append(DataLoader(partition_train, batch_size=b_size, shuffle=True))
-        valloaders.append(DataLoader(partition_test, batch_size=b_size))
-    return trainloaders, valloaders, testloader, features
+        test = Dataset.from_pandas(normalized_test, preserve_index=False)
+
+        testloader= DataLoader(test, batch_size=b_size, shuffle=True)
+
+        features = test.features
+
+        trainloaders = []
+        valloaders = []
+        # Looping through each client, splitting train into train and val and turning into Pytorch DataLoader
+        for file in dirs:
+            print(file)
+            df = pd.read_csv(path+"/"+file)
+            df.pop("RAC1P")
+
+            sensitive_attributes_list = np.array(list(df[sens_attr]))
+            comp_attributes_list = np.array(list(df[comp_attr]))
+            targets_list = np.array(list(df["ESR"]))
+
+            possible_sensitive_attributes = list(set(sensitive_attributes_list))
+            possible_comp_attributes = list (set(comp_attributes_list))
+            possible_targets = list(set(targets_list))
+
+            disparities, combinations = compute_disparity(
+                sensitive_attributes=sensitive_attributes_list,
+                targets=targets_list,
+                possible_sensitive_attributes=possible_sensitive_attributes,
+                possible_targets=possible_targets
+            )
+            print(sens_attr, disparities, combinations)
+            #wandb.log({f"{file}_initial_disparity_{sens_attr}": disparities})
+            disparities, combinations = compute_disparity(
+                sensitive_attributes=comp_attributes_list,
+                targets=targets_list,
+                possible_sensitive_attributes=possible_comp_attributes,
+                possible_targets=possible_targets
+            )
+            print(comp_attr, disparities, combinations)
+            #wandb.log({f"{file}_initial_disparity_{comp_attr}":disparities})
+
+            normalized_df = (df - df.min()) / (df.max() - df.min())
+            normalized_df["ESR"] = df["ESR"]
+            # Divide data on each node: 90% train, 10% validation
+            train, test = train_test_split(normalized_df, test_size=0.1)
+            partition_train = Dataset.from_pandas(train, preserve_index=False)
+            partition_test = Dataset.from_pandas(test, preserve_index=False)
+            trainloaders.append(DataLoader(partition_train, batch_size=b_size, shuffle=True))
+            valloaders.append(DataLoader(partition_test, batch_size=b_size))
+    if dataset == "income":
+        path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data"
+        # directory for states income in order as in graph (first 10 SEX, other MAR)
+        if cluster ==0: 
+            dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv','TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
+        elif cluster == 1: 
+            dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
+        elif cluster == 2: 
+            dirs = ['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
+
+        print(dirs)
+        testset = pd.read_csv(
+            "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data/LA.csv")
+        testset.pop("RAC1P")
+        normalized_test = (testset - testset.min()) / (testset.max() - testset.min())
+        normalized_test[">50K"] = testset[">50K"]
+        # Divide data on each node: 90% train, 10% validation
+        test = Dataset.from_pandas(normalized_test, preserve_index=False)
+
+        testloader = DataLoader(test, batch_size=b_size, shuffle=True)
+
+        features = test.features
+
+        trainloaders = []
+        valloaders = []
+        # Looping through each client, splitting train into train and val and turning into Pytorch DataLoader
+        for file in dirs:
+            print(file)
+            df = pd.read_csv(path + "/" + file)
+            df.pop("RAC1P")
+
+            sensitive_attributes_list = np.array(list(df[sens_attr]))
+            comp_attributes_list = np.array(list(df[comp_attr]))
+            targets_list = np.array(list(df[">50K"]))
+
+            possible_sensitive_attributes = list(set(sensitive_attributes_list))
+            possible_comp_attributes = list(set(comp_attributes_list))
+            possible_targets = list(set(targets_list))
+
+            disparities, combinations = compute_disparity(
+                sensitive_attributes=sensitive_attributes_list,
+                targets=targets_list,
+                possible_sensitive_attributes=possible_sensitive_attributes,
+                possible_targets=possible_targets
+            )
+            print(sens_attr, disparities, combinations)
+            # wandb.log({f"{file}_initial_disparity_{sens_attr}": disparities})
+            disparities, combinations = compute_disparity(
+                sensitive_attributes=comp_attributes_list,
+                targets=targets_list,
+                possible_sensitive_attributes=possible_comp_attributes,
+                possible_targets=possible_targets
+            )
+            print(comp_attr, disparities, combinations)
+            # wandb.log({f"{file}_initial_disparity_{comp_attr}":disparities})
+
+            normalized_df = (df - df.min()) / (df.max() - df.min())
+            normalized_df[">50K"] = df[">50K"]
+            # Divide data on each node: 90% train, 10% validation
+            train, test = train_test_split(normalized_df, test_size=0.1)
+            partition_train = Dataset.from_pandas(train, preserve_index=False)
+            partition_test = Dataset.from_pandas(test, preserve_index=False)
+            trainloaders.append(DataLoader(partition_train, batch_size=b_size, shuffle=True))
+            valloaders.append(DataLoader(partition_test, batch_size=b_size))
+        return trainloaders, valloaders, testloader, features
 
 

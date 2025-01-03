@@ -88,7 +88,7 @@ print(
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--num-clients', default = 20, help='number of FL clients', type= int)
-parser.add_argument('--epochs', help = "epochs for  local training", default = 30, type=int)
+parser.add_argument('--epochs', help = "epochs for  local training", default = 10, type=int)
 parser.add_argument('--rounds', default = 10, type= int)
 parser.add_argument('--selection-rate', type = float, default= 1.0,  help='proportion of clients selected in each round of training')
 parser.add_argument('--sensitive-attribute', type= str, default="MAR", help='name of the sensitive attributes')
@@ -120,9 +120,9 @@ path_extension = f'FedMinMax_states_iid_{NUM_CLIENTS}C_{int(SELECTION_RATE * 20)
 dataset_name =opt.dataset_name
 
 if dataset_name == "income":
-    in_feat= 7
+    in_feat= 39
 else:
-    in_feat = 13
+    in_feat = 79
 data = {
     "rounds": [],
     "general_fairness": {
@@ -154,7 +154,7 @@ data = {
       "stats":[],
       "stats_comp":[]}}
 
-#wandb.init(project="multiobj-FL", config=data["config"])
+wandb.init(project="multiobj-FL-wo-race", config=data["config"])
 
 
 # Key experiment specific functions:

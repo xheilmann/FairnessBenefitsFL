@@ -94,7 +94,7 @@ path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning
 #directory for states employment in order as in graph (first 10 SEX, other MAR)
 dirs = ['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv','RI.csv', 'CT.csv', 'NM.csv', 'CO.csv','UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv', 'WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
 
-print(dirs)
+
 
 
 
@@ -117,25 +117,19 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
     """
     # Download and transform CIFAR-10 (train and test)
     # Loading the central testset:
+
+
     if dataset=="employment":
-        path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/employment_data_unfair"
-        if cluster ==0:
-            dirs = ['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv',
-                    'UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv', 'WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
-        elif cluster ==1:
-            dirs = ['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
-                   
-        elif cluster ==2:
-            dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv', 'WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
-
-        print(dirs)
-        testset =pd.read_csv("/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/employment_data_unfair/IL.csv")
-        testset.pop("RAC1P")
-        normalized_test= (testset - testset.min()) / (testset.max() - testset.min())
-        normalized_test["ESR"]=testset["ESR"]
+        if cluster == 0:
+            dic = [5, 6, 7, 8, 9, 13, 15, 17, 18, 19, 0, 1, 2, 3, 4, 10, 11, 12, 14, 16]
+        elif cluster == 1:
+            dic = [5, 6, 7, 8, 9, 13, 15, 17, 18, 19]
+        elif cluster == 2:
+            dic = [0, 1, 2, 3, 4, 10, 11, 12, 14, 16]
+        path = "/media/heilmann/MultiObjFairFL/federated-fairness-main/preprocessed_data/employment/"
+        testset =pd.read_csv(path+"test_0.csv")
         # Divide data on each node: 90% train, 10% validation
-        test = Dataset.from_pandas(normalized_test, preserve_index=False)
-
+        test = Dataset.from_pandas(testset, preserve_index=False)
         testloader= DataLoader(test, batch_size=b_size, shuffle=True)
 
         features = test.features
@@ -143,14 +137,14 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
         trainloaders = []
         valloaders = []
         # Looping through each client, splitting train into train and val and turning into Pytorch DataLoader
-        for file in dirs:
-            print(file)
-            df = pd.read_csv(path+"/"+file)
-            df.pop("RAC1P")
+        for i in dic:
+            print(i)
+            df_train = pd.read_csv(path+f"train_{i}.csv")
+            df_test = pd.read_csv(path+f"train_{i}.csv")
 
-            sensitive_attributes_list = np.array(list(df[sens_attr]))
-            comp_attributes_list = np.array(list(df[comp_attr]))
-            targets_list = np.array(list(df["ESR"]))
+            sensitive_attributes_list = np.array(list(df_train[sens_attr]))
+            comp_attributes_list = np.array(list(df_train[comp_attr]))
+            targets_list = np.array(list(df_train["ESR"]))
 
             possible_sensitive_attributes = list(set(sensitive_attributes_list))
             possible_comp_attributes = list (set(comp_attributes_list))
@@ -163,7 +157,6 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
                 possible_targets=possible_targets
             )
             print(sens_attr, disparities, combinations)
-            #wandb.log({f"{file}_initial_disparity_{sens_attr}": disparities})
             disparities, combinations = compute_disparity(
                 sensitive_attributes=comp_attributes_list,
                 targets=targets_list,
@@ -171,34 +164,23 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
                 possible_targets=possible_targets
             )
             print(comp_attr, disparities, combinations)
-            #wandb.log({f"{file}_initial_disparity_{comp_attr}":disparities})
+            #wandb.log({f"{file}_initial_disparity_{sens_attr}": disparities})
 
-            normalized_df = (df - df.min()) / (df.max() - df.min())
-            normalized_df["ESR"] = df["ESR"]
-            # Divide data on each node: 90% train, 10% validation
-            train, test = train_test_split(normalized_df, test_size=0.1)
-            partition_train = Dataset.from_pandas(train, preserve_index=False)
-            partition_test = Dataset.from_pandas(test, preserve_index=False)
+            partition_train = Dataset.from_pandas(df_train, preserve_index=False)
+            partition_test = Dataset.from_pandas(df_test, preserve_index=False)
             trainloaders.append(DataLoader(partition_train, batch_size=b_size, shuffle=True))
-            valloaders.append(DataLoader(partition_test, batch_size=b_size))
+            valloaders.append(DataLoader(partition_test, batch_size=b_size, shuffle=True))
     if dataset == "income":
-        path = "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data"
-        # directory for states income in order as in graph (first 10 SEX, other MAR)
-        if cluster ==0: 
-            dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv','TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
-        elif cluster == 1: 
-            dirs = ['UT.csv', 'WI.csv', 'NH.csv', 'IN.csv', 'SD.csv', 'LA.csv','WV.csv', 'ND.csv', 'WY.csv', 'KS.csv']
-        elif cluster == 2: 
-            dirs = ['TX.csv', 'FL.csv', 'CA.csv', 'IL.csv', 'PA.csv', 'VT.csv', 'RI.csv', 'CT.csv', 'NM.csv', 'CO.csv']
-
-        print(dirs)
-        testset = pd.read_csv(
-            "/media/heilmann/MultiObjFairFL/Improving-Fairness-via-Federated-Learning-main/FedFB/sampled_data/LA.csv")
-        testset.pop("RAC1P")
-        normalized_test = (testset - testset.min()) / (testset.max() - testset.min())
-        normalized_test[">50K"] = testset[">50K"]
+        if cluster == 0:
+            dic = [5, 6, 7, 8, 9, 13, 15, 17, 18,19, 0, 1, 2, 3, 4, 10, 11, 12, 14, 16]
+        elif cluster == 1:
+            dic = [5, 6, 7, 8, 9, 13, 15, 17, 18,19]
+        elif cluster == 2:
+            dic = [0, 1, 2, 3, 4, 10, 11, 12, 14, 16]
+        path = "/media/heilmann/MultiObjFairFL/federated-fairness-main/preprocessed_data/income/"
+        testset = pd.read_csv(path + "test_0.csv")
         # Divide data on each node: 90% train, 10% validation
-        test = Dataset.from_pandas(normalized_test, preserve_index=False)
+        test = Dataset.from_pandas(testset, preserve_index=False)
 
         testloader = DataLoader(test, batch_size=b_size, shuffle=True)
 
@@ -207,14 +189,14 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
         trainloaders = []
         valloaders = []
         # Looping through each client, splitting train into train and val and turning into Pytorch DataLoader
-        for file in dirs:
-            print(file)
-            df = pd.read_csv(path + "/" + file)
-            df.pop("RAC1P")
+        for i in dic:
+            print(i)
+            df_train = pd.read_csv(path + f"train_{i}.csv")
+            df_test = pd.read_csv(path + f"train_{i}.csv")
 
-            sensitive_attributes_list = np.array(list(df[sens_attr]))
-            comp_attributes_list = np.array(list(df[comp_attr]))
-            targets_list = np.array(list(df[">50K"]))
+            sensitive_attributes_list = np.array(list(df_train[sens_attr]))
+            comp_attributes_list = np.array(list(df_train[comp_attr]))
+            targets_list = np.array(list(df_train[">50K"]))
 
             possible_sensitive_attributes = list(set(sensitive_attributes_list))
             possible_comp_attributes = list(set(comp_attributes_list))
@@ -227,7 +209,6 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
                 possible_targets=possible_targets
             )
             print(sens_attr, disparities, combinations)
-            # wandb.log({f"{file}_initial_disparity_{sens_attr}": disparities})
             disparities, combinations = compute_disparity(
                 sensitive_attributes=comp_attributes_list,
                 targets=targets_list,
@@ -235,16 +216,12 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
                 possible_targets=possible_targets
             )
             print(comp_attr, disparities, combinations)
-            # wandb.log({f"{file}_initial_disparity_{comp_attr}":disparities})
+            # wandb.log({f"{file}_initial_disparity_{sens_attr}": disparities})
 
-            normalized_df = (df - df.min()) / (df.max() - df.min())
-            normalized_df[">50K"] = df[">50K"]
-            # Divide data on each node: 90% train, 10% validation
-            train, test = train_test_split(normalized_df, test_size=0.1)
-            partition_train = Dataset.from_pandas(train, preserve_index=False)
-            partition_test = Dataset.from_pandas(test, preserve_index=False)
+            partition_train = Dataset.from_pandas(df_train, preserve_index=False)
+            partition_test = Dataset.from_pandas(df_test, preserve_index=False)
             trainloaders.append(DataLoader(partition_train, batch_size=b_size, shuffle=True))
-            valloaders.append(DataLoader(partition_test, batch_size=b_size))
+            valloaders.append(DataLoader(partition_test, batch_size=b_size, shuffle=True))
     return trainloaders, valloaders, testloader, features
 
 

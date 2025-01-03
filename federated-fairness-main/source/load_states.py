@@ -39,7 +39,7 @@ limitations under the License.
 
 -------------------------------------------------------------------------------------------------------------
 """
-from sndhdr import tests
+
 
 import numpy as np
 import pandas as pd
@@ -245,6 +245,6 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
             partition_test = Dataset.from_pandas(test, preserve_index=False)
             trainloaders.append(DataLoader(partition_train, batch_size=b_size, shuffle=True))
             valloaders.append(DataLoader(partition_test, batch_size=b_size))
-        return trainloaders, valloaders, testloader, features
+    return trainloaders, valloaders, testloader, features
 
 

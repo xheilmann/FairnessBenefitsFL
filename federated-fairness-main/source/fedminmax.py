@@ -104,8 +104,8 @@ def data_preprocess(num_clients, trainloaders, valloaders, sensitive_attributes,
                 labels = data["ESR"]
             else:
                 labels = data[">50K"] # accounts for states
-                sex = data[sens_att]
-                num_total_samples += len(labels)
+            sex = data[sens_att]
+            num_total_samples += len(labels)
 
             for s in range(num_sensitive):
                 matched1 = labels == sensitive_attributes[s][0]
@@ -121,8 +121,8 @@ def data_preprocess(num_clients, trainloaders, valloaders, sensitive_attributes,
                 labels = data["ESR"]
             else:
                 labels = data[">50K"]  # accounts for states
-                sex = data[sens_att]
-                num_total_samples += len(labels)
+            sex = data[sens_att]
+            num_total_samples += len(labels)
             for s in range(num_sensitive):
                 matched1 = labels == sensitive_attributes[s][0]
                 matched2 = sex == sensitive_attributes[s][1]

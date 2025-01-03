@@ -95,7 +95,7 @@ parser.add_argument('--sensitive-attribute', type= str, default="MAR", help='nam
 parser.add_argument('--comp-attribute',  type= str, default="SEX",  help='name of the comparision attributes')
 parser.add_argument("--fedminmax-lr", default = 0.002, help="value of overall lr", type = float)
 parser.add_argument("--fedminmax-adverse-lr", default = 0.01, help="value of local lr", type= float)
-parser.add_argument("--dataset-name", type=str, default="income", help="name of the dataset")
+parser.add_argument("--dataset-name", type=str, default="employment", help="name of the dataset")
 parser.add_argument("--batch-size", default=528, type=int, help="batch size for training")
 parser.add_argument("--cluster", default=0, type=int, help="cluster = 0 all clients, cluster = 1 clients that are unfair towrads SEX, cluster=2 clients that are unfair towards MAR")
 
@@ -154,7 +154,7 @@ data = {
       "stats":[],
       "stats_comp":[]}}
 
-wandb.init(project="multiobj-FL", config=data["config"])
+#wandb.init(project="multiobj-FL", config=data["config"])
 
 
 # Key experiment specific functions:

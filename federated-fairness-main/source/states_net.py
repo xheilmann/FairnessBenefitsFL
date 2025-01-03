@@ -188,11 +188,11 @@ def train(net, trainloader, epochs: int, option = None, sens_att="SEX", comp_att
                     # Calculating the key risk parameters
                     #print(lbls, inpt, subset_loss, subset_losses)
                     risks = np.nan_to_num(np.array(subset_losses))
-                    print(f"risks:{risks}")
+                    #print(f"risks:{risks}")
                     sum_risks += risks
-                    print(f"sumrisks:{sum_risks}")
+                    #print(f"sumrisks:{sum_risks}")
                     risk = np.sum((np.array(option["w"]) * risks) / batch_size)
-                    print(f"risk:{risk}")
+                    #print(f"risk:{risk}")
                     fedminmax_manual_update(option["lr"], risk)
             else:
                 optimizer.step()

@@ -143,7 +143,7 @@ class FlowerClient(fl.client.NumPyClient):
         # Training and evaluating
         set_parameters(self.net, parameters)
         # Determining the reward the client has receieved from the server for incentive fairness in the case it is the model itself:
-        _, reward_stat, _ ,_,_,_= self.test(self.net, self.valloader, [])
+        _, reward_stat, _ ,_,_,_= self.test(self.net, self.valloader, sensitive_attributes, sens_att, comp_att)
         reward = reward_stat[0]/reward_stat[1]
         # Default is FedAvg:
         if "ditto" in config:
@@ -167,7 +167,7 @@ class FlowerClient(fl.client.NumPyClient):
             params = get_parameters(self.net)
         # Performing federated evaluation on the clients that are sampled for training:
         print(f"[Client {self.cid}] evaluate, config: {config}")
-        loss, accuracy, group_eod, group_stats, group_comp_eod, group_comp_stats = self.test(self.net, self.valloader, sensitive_attributes)
+        loss, accuracy, group_eod, group_stats, group_comp_eod, group_comp_stats = self.test(self.net, self.valloader, sensitive_labels= sensitive_attributes, sens_att= sens_att, comp_att =comp_att)
         #group_fairness = dict(zip(sensitive_attributes, group_eod))
         #group_comp_fairness = dict(zip(sensitive_attributes, group_comp_eod))
 

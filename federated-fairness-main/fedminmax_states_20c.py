@@ -103,7 +103,7 @@ opt = parser.parse_args()
 
 
 
-
+ 
 # Key parameter and data storage variables:
 NUM_CLIENTS = opt.num_clients
 LOCAL_EPOCHS = opt.epochs
@@ -190,7 +190,7 @@ def evaluate(server_round: int,
     net = Net(in_feat).to(DEVICE)
     shap.aggregatedRoundParams = parameters
     set_parameters(net, parameters)
-    loss, accuracy, _,_,_,_ = test(net, testloader)
+    loss, accuracy, _,_,_,_ = test(net, testloader, sensitive_labels= SENSITIVE_ATTRIBUTES, sens_att=SENS_ATT, comp_att=COMP_ATT)
     shap.f_o = accuracy # stored incase the user wants to define orchestrator fairness by the central eval performance, usused by default
     shap.centralLoss = loss
     shap.round = server_round

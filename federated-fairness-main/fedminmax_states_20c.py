@@ -93,9 +93,9 @@ parser.add_argument('--rounds', default = 10, type= int)
 parser.add_argument('--selection-rate', type = float, default= 1.0,  help='proportion of clients selected in each round of training')
 parser.add_argument('--sensitive-attribute', type= str, default="MAR", help='name of the sensitive attributes')
 parser.add_argument('--comp-attribute',  type= str, default="SEX",  help='name of the comparision attributes')
-parser.add_argument("--fedminmax-lr", default = 0.002, help="value of overall lr", type = float)
-parser.add_argument("--fedminmax-adverse-lr", default = 0.01, help="value of local lr", type= float)
-parser.add_argument("--dataset-name", type=str, default="employment", help="name of the dataset")
+parser.add_argument("--fedminmax-lr", default = 0.02, help="value of overall lr", type = float)
+parser.add_argument("--fedminmax-adverse-lr", default = 0.001, help="value of local lr", type= float)
+parser.add_argument("--dataset-name", type=str, default="income", help="name of the dataset")
 parser.add_argument("--batch-size", default=528, type=int, help="batch size for training")
 parser.add_argument("--cluster", default=0, type=int, help="cluster = 0 all clients, cluster = 1 clients that are unfair towrads SEX, cluster=2 clients that are unfair towards MAR")
 
@@ -120,7 +120,7 @@ path_extension = f'FedMinMax_states_iid_{NUM_CLIENTS}C_{int(SELECTION_RATE * 20)
 dataset_name =opt.dataset_name
 
 if dataset_name == "income":
-    in_feat= 39
+    in_feat= 40
 else:
     in_feat = 79
 data = {
@@ -320,10 +320,10 @@ strategy = FedMinMax(
     accept_failures = False
 )
 # Specifying client resources:
-client_resources = None # {"num_cpus": 1, "num_gpus": 0.0}
+client_resources =  {"num_cpus": 3, "num_gpus": 0.0}
 if DEVICE.type == "cuda":
     # here we are asigning an entire GPU for each client.
-    client_resources = {"num_cpus": 1, "num_gpus": 1.0}
+    client_resources = {"num_cpus": 3, "num_gpus": 0.5}
 # Start simulation
 fl.simulation.start_simulation(
     client_fn=client_fn,

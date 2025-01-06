@@ -97,7 +97,7 @@ parser.add_argument("--fedminmax-lr", default = 0.02, help="value of overall lr"
 parser.add_argument("--fedminmax-adverse-lr", default = 0.001, help="value of local lr", type= float)
 parser.add_argument("--dataset-name", type=str, default="income", help="name of the dataset")
 parser.add_argument("--batch-size", default=528, type=int, help="batch size for training")
-parser.add_argument("--cluster", default=0, type=int, help="cluster = 0 all clients, cluster = 1 clients that are unfair towrads SEX, cluster=2 clients that are unfair towards MAR")
+parser.add_argument("--cluster", default=0, type=int, help="cluster = 0 all clients, cluster = 1 clients that are unfair towards SEX, cluster=2 clients that are unfair towards MAR")
 
 opt = parser.parse_args()
 

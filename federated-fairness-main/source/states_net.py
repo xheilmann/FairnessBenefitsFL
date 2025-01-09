@@ -181,7 +181,7 @@ def train(net, trainloader, epochs: int, option = None, sens_att="SEX", comp_att
                         #print(subsets[s])
                         if subsets[s] == []:
                             continue
-                        lbls = torch.Tensor([sensitive_attributes[s][0] for img in range(len(subsets[s]))]).double().to(DEVICE)
+                        lbls = torch.Tensor([sensitive_attributes[s][img] for img in range(len(subsets[s]))]).double().to(DEVICE)
                         inpt = (torch.stack(subsets[s])).to(DEVICE)
                         subset_loss = criterion(net(inpt).squeeze(1), lbls)
                         subset_losses[s] += float(subset_loss)
@@ -262,8 +262,8 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
                 nlab=torch.flatten(nlab)
                 nlab1 = (sex != label[1])
                 not_labelled = (nlab == nlab1) * (nlab1 == True)
-                group_performance[l][0] += int(torch.sum((matched == labelled) * (labelled ==True)))
-                group_performance[l][1] += int(torch.sum((matched == not_labelled) * (not_labelled ==True)))
+                group_performance[l][0] += int(labelled.sum())
+                group_performance[l][1] += int(not_labelled.sum())
                 group_performance[l][2] += int(lab1.sum())
                 group_performance[l][3] += int(nlab1.sum())
                 l = l + 1
@@ -279,8 +279,8 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
                 nlab = torch.flatten(nlab)
                 nlab1 = (comp != label[1])
                 not_labelled = (nlab == nlab1) * (nlab1 == True)
-                group_comp_performance[l][0] += int(torch.sum((matched == labelled) * (labelled == True)))
-                group_comp_performance[l][1] += int(torch.sum((matched == not_labelled) * (not_labelled == True)))
+                group_comp_performance[l][0] += int(labelled.sum())
+                group_comp_performance[l][1] += int(labelled.sum())
                 group_comp_performance[l][2] += int(lab1.sum())
                 group_comp_performance[l][3] += int(nlab1.sum())
                 l = l + 1

@@ -1,0 +1,149 @@
+{
+    "average": {
+        "Accuracy": 0.7624660347949215,
+        "Selection Rate": 0.3663708790516887,
+        "Worst Difference in Selection Rate": 0.019987152843735367,
+        "Demographic Parity SEX": 0.00343057117434159,
+        "Demographic Parity MAR": 0.004700334473415835
+    },
+    "0": {
+        "Accuracy": 0.7552766685681689,
+        "Selection Rate": 0.3259808582113203,
+        "Worst Difference in Selection Rate": 0.1958646573284382,
+        "Demographic Parity SEX": 0.12739296196333497,
+        "Demographic Parity MAR": 0.04080357332030593
+    },
+    "1": {
+        "Accuracy": 0.7755181599636151,
+        "Selection Rate": 0.3479306087973491,
+        "Worst Difference in Selection Rate": 0.16244309595319906,
+        "Demographic Parity SEX": 0.16192354633399028,
+        "Demographic Parity MAR": 0.022230728903299357
+    },
+    "2": {
+        "Accuracy": 0.7570988050880123,
+        "Selection Rate": 0.3426056790440704,
+        "Worst Difference in Selection Rate": 0.18671071227990052,
+        "Demographic Parity SEX": 0.1444451876740195,
+        "Demographic Parity MAR": 0.018052916276316056
+    },
+    "3": {
+        "Accuracy": 0.7785251619332337,
+        "Selection Rate": 0.3099775784753363,
+        "Worst Difference in Selection Rate": 0.2566827082188164,
+        "Demographic Parity SEX": 0.14683089034817445,
+        "Demographic Parity MAR": 0.09811330505182286
+    },
+    "4": {
+        "Accuracy": 0.7650224215246637,
+        "Selection Rate": 0.336386931454196,
+        "Worst Difference in Selection Rate": 0.18261732985637893,
+        "Demographic Parity SEX": 0.15505356495569508,
+        "Demographic Parity MAR": 0.012537907112677382
+    },
+    "5": {
+        "Accuracy": 0.76405,
+        "Selection Rate": 0.4012,
+        "Worst Difference in Selection Rate": 0.07259114488930624,
+        "Demographic Parity SEX": 0.06664246257617534,
+        "Demographic Parity MAR": 0.008100820107687035
+    },
+    "6": {
+        "Accuracy": 0.75775,
+        "Selection Rate": 0.3925,
+        "Worst Difference in Selection Rate": 0.11472195994037548,
+        "Demographic Parity SEX": 0.07800636837745045,
+        "Demographic Parity MAR": 0.03712812457102188
+    },
+    "7": {
+        "Accuracy": 0.7632,
+        "Selection Rate": 0.3856,
+        "Worst Difference in Selection Rate": 0.0713823757085425,
+        "Demographic Parity SEX": 0.03949418819919198,
+        "Demographic Parity MAR": 0.0253666701537818
+    },
+    "8": {
+        "Accuracy": 0.76,
+        "Selection Rate": 0.4051,
+        "Worst Difference in Selection Rate": 0.1346449082993344,
+        "Demographic Parity SEX": 0.10183113728947396,
+        "Demographic Parity MAR": 0.029870611952159398
+    },
+    "9": {
+        "Accuracy": 0.7399,
+        "Selection Rate": 0.4202,
+        "Worst Difference in Selection Rate": 0.13237713664784595,
+        "Demographic Parity SEX": 0.08476100181850427,
+        "Demographic Parity MAR": 0.045391942575478905
+    },
+    "10": {
+        "Accuracy": 0.7659574468085106,
+        "Selection Rate": 0.308175333780406,
+        "Worst Difference in Selection Rate": 0.23189209534390243,
+        "Demographic Parity SEX": 0.12591681236853547,
+        "Demographic Parity MAR": 0.08402286667788639
+    },
+    "11": {
+        "Accuracy": 0.7683875079668578,
+        "Selection Rate": 0.31306564690885913,
+        "Worst Difference in Selection Rate": 0.20835147316054406,
+        "Demographic Parity SEX": 0.13609611057537765,
+        "Demographic Parity MAR": 0.039010053872284955
+    },
+    "12": {
+        "Accuracy": 0.7519745222929937,
+        "Selection Rate": 0.3421656050955414,
+        "Worst Difference in Selection Rate": 0.21056210797224448,
+        "Demographic Parity SEX": 0.12699490535491714,
+        "Demographic Parity MAR": 0.06579754182982528
+    },
+    "13": {
+        "Accuracy": 0.7651,
+        "Selection Rate": 0.39325,
+        "Worst Difference in Selection Rate": 0.12250282188226891,
+        "Demographic Parity SEX": 0.0730515779049623,
+        "Demographic Parity MAR": 0.051784684564584016
+    },
+    "14": {
+        "Accuracy": 0.7766743060860708,
+        "Selection Rate": 0.3100331041507512,
+        "Worst Difference in Selection Rate": 0.17271278767102244,
+        "Demographic Parity SEX": 0.16207148672594623,
+        "Demographic Parity MAR": 0.01748752084467653
+    },
+    "15": {
+        "Accuracy": 0.7816,
+        "Selection Rate": 0.4107,
+        "Worst Difference in Selection Rate": 0.2749424243865277,
+        "Demographic Parity SEX": 0.08046492418431767,
+        "Demographic Parity MAR": 0.19430509604711738
+    },
+    "16": {
+        "Accuracy": 0.7385113268608414,
+        "Selection Rate": 0.330873786407767,
+        "Worst Difference in Selection Rate": 0.20146394601200915,
+        "Demographic Parity SEX": 0.10134186665092554,
+        "Demographic Parity MAR": 0.055844441357627506
+    },
+    "17": {
+        "Accuracy": 0.7657,
+        "Selection Rate": 0.39675,
+        "Worst Difference in Selection Rate": 0.10974312234343564,
+        "Demographic Parity SEX": 0.09009484057468703,
+        "Demographic Parity MAR": 0.001892402423091133
+    },
+    "18": {
+        "Accuracy": 0.76755,
+        "Selection Rate": 0.37615,
+        "Worst Difference in Selection Rate": 0.09292580364381747,
+        "Demographic Parity SEX": 0.06690502779879198,
+        "Demographic Parity MAR": 0.025822675003269346
+    },
+    "19": {
+        "Accuracy": 0.7528,
+        "Selection Rate": 0.3957,
+        "Worst Difference in Selection Rate": 0.0952645256454655,
+        "Demographic Parity SEX": 0.06519393737423113,
+        "Demographic Parity MAR": 0.031214857001414797
+    }
+}

@@ -96,7 +96,7 @@ parser.add_argument('--comp-attribute',  type= str, default="SEX",  help='name o
 parser.add_argument("--fedminmax-lr", default = 0.02, help="value of overall lr", type = float)
 parser.add_argument("--fedminmax-adverse-lr", default = 0.001, help="value of local lr", type= float)
 parser.add_argument("--dataset-name", type=str, default="income", help="name of the dataset")
-parser.add_argument("--batch-size", default=528, type=int, help="batch size for training")
+parser.add_argument("--batch-size", default=2048, type=int, help="batch size for training")
 parser.add_argument("--cluster", default=0, type=int, help="cluster = 0 all clients, cluster = 1 clients that are unfair towards SEX, cluster=2 clients that are unfair towards MAR")
 
 opt = parser.parse_args()
@@ -221,6 +221,7 @@ def fit_callback(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # We determine individual fairness using the FedEval accuracy and JFI
     accuracies = np.array([metric["accuracy"] for _,metric in metrics])
     print(accuracies)
+    loss = np.mean(np.array([metric["loss"] for _,metric in metrics]))
     rewards = np.array([metric["reward"] for _,metric in metrics])
     contributions = shap.resultsFedSV
     gains = np.array([accuracies[i] / contributions[metrics[i][1]["cid"]] for i in range(len(metrics))])
@@ -288,7 +289,7 @@ def fit_callback(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     data["per_client_data"]["stats"].append(stats)
     data["per_client_data"]["stats_comp"].append(stats_comp)
     wandb.log({"global_acc":f_o,"disparity":np.max(f_g), "client_acc":accuracy, "global_sens_fairness":f_g ,"global_comp_fairness":f_comp_g,
-                "client_comp_fairness": comp_eop, "client_stats":stats, "client_comp_stats":stats_comp}, step=shap.round)
+                "client_comp_fairness": comp_eop, "client_stats":stats, "client_comp_stats":stats_comp, "loss":loss}, step=shap.round)
     return {"f_j": f_j, "f_g": f_g, "f_r": f_r, "f_o": f_o}
 
 

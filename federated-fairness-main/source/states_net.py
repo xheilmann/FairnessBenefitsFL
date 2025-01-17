@@ -72,20 +72,20 @@ class Net(nn.Module):
     def __init__(self, in_feat) -> None:
         super(Net, self).__init__()
         # Needs to start with input space as wide as preprocessed inputs, 123 wide including the class label
-        self.layer1 = nn.Linear(in_feat, 100, dtype=torch.float64)
+        self.layer1 = nn.Linear(in_feat, 512, dtype=torch.float64)
         self.act1 = nn.ReLU()
-        self.layer2 = nn.Linear(100, 100, dtype=torch.float64)
-        self.act2 = nn.ReLU()
-        self.layer3 = nn.Linear(100, 50, dtype=torch.float64)
-        self.act3 = nn.ReLU()
-        self.output = nn.Linear(50, 1, dtype=torch.float64) # ends with single output binary classifier
+#        self.layer2 = nn.Linear(100, 100, dtype=torch.float64)
+#        self.act2 = nn.ReLU()
+#        self.layer3 = nn.Linear(100, 50, dtype=torch.float64)
+#        self.act3 = nn.ReLU()
+        self.output = nn.Linear(512, 1, dtype=torch.float64) # ends with single output binary classifier
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor: 
         """ A forward pass through the network. """
         x = self.act1(self.layer1(x))
-        x = self.act2(self.layer2(x))
-        x = self.act3(self.layer3(x))
+#        x = self.act2(self.layer2(x))
+#        x = self.act3(self.layer3(x))
         x = self.sigmoid(self.output(x))
         return x
 
@@ -181,7 +181,7 @@ def train(net, trainloader, epochs: int, option = None, sens_att="SEX", comp_att
                         #print(subsets[s])
                         if subsets[s] == []:
                             continue
-                        lbls = torch.Tensor([sensitive_attributes[s][img] for img in range(len(subsets[s]))]).double().to(DEVICE)
+                        lbls = torch.Tensor([sensitive_attributes[s][1] for img in range(len(subsets[s]))]).double().to(DEVICE)
                         inpt = (torch.stack(subsets[s])).to(DEVICE)
                         subset_loss = criterion(net(inpt).squeeze(1), lbls)
                         subset_losses[s] += float(subset_loss)
@@ -254,11 +254,11 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
             l=0
             for label in sensitive_labels:
 
-                lab = (labels == label[0])
+                lab = (predicted == label[0])
                 lab=torch.flatten(lab)
                 lab1= (sex == label[1])
                 labelled = (lab == lab1) * (lab1 == True)
-                nlab = (labels == label[0])
+                nlab = (predicted == label[0])
                 nlab=torch.flatten(nlab)
                 nlab1 = (sex != label[1])
                 not_labelled = (nlab == nlab1) * (nlab1 == True)
@@ -271,16 +271,16 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
             correct += matched.sum().item()
             l = 0
             for label in sensitive_labels:
-                lab = (labels == label[0])
+                lab = (predicted == label[0])
                 lab = torch.flatten(lab)
                 lab1 = (comp == label[1])
                 labelled = (lab == lab1) * (lab1 == True)
-                nlab = (labels == label[0])
+                nlab = (predicted == label[0])
                 nlab = torch.flatten(nlab)
                 nlab1 = (comp != label[1])
                 not_labelled = (nlab == nlab1) * (nlab1 == True)
                 group_comp_performance[l][0] += int(labelled.sum())
-                group_comp_performance[l][1] += int(labelled.sum())
+                group_comp_performance[l][1] += int(not_labelled.sum())
                 group_comp_performance[l][2] += int(lab1.sum())
                 group_comp_performance[l][3] += int(nlab1.sum())
                 l = l + 1

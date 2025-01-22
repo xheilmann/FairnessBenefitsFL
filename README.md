@@ -1,4 +1,4 @@
-##Benefits of the Federation? Analyzing the Impact of Fair Federated Learning at the Client Level
+## Benefits of the Federation? Analyzing the Impact of Fair Federated Learning at the Client Level
 -----------------------------------------------------------------------------------
 
 Federated Learning (FL) enables collaborative model training while preserving the privacy of participating clients’ local data. However,the diverse data distributions across the different clients can exacerbate fairness issues, as biases inherent in client data may propagate 
@@ -7,4 +7,28 @@ or diverse fairness objectives. Such clients may contribute to the federation wi
 model unfairness in scenarios where clients have differing and potentially conflicting fairness requirements. Through analysis of disparities across sensitive attributes and model performance, we investigate the conditions under which clients benefit from federation
 participation. Our findings emphasize the importance of aligning federation objectives and communicating these with diverse client needs to enhance participation and equitable outcomes in FL settings.
 
-We here provide the code and the preprocessed data for this analysis. The data can be found in `federated-fairness-main/preprocessed_data`. Each file provides their own requirements.txt file to run the code.
+### Repo Structure
+We provide in the Repo a directory for each method we used in our comparision: 
+* PUFFLE
+* Reweighting
+* FedMinMax
+* Local and Global Models
+
+The preprocessed input data The data can be found in `federated-fairness-main/preprocessed_data`.
+
+### How to install the dependencies
+
+For PUFFLE and Reweighting the Poetry dependency manager is used. If you don't have poetry installed you can run:
+
+```
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+Then, you can install all the dependencies with:
+
+- poetry install 
+
+For FedminMax and the local and global models we procide a `requirements.txt` file in the respective directories. 
+
+### How to run the code
+As all methods we applied differ in how they we provide `run.py` files as well as some extended `README.md` from the original code files in each directory. 

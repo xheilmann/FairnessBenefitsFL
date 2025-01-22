@@ -140,7 +140,7 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
         for i in dic:
             print(i)
             df_train = pd.read_csv(path+f"train_{i}.csv")
-            df_test = pd.read_csv(path+f"train_{i}.csv")
+            df_test = pd.read_csv(path+f"test_{i}.csv")
 
             sensitive_attributes_list = np.array(list(df_train[sens_attr]))
             comp_attributes_list = np.array(list(df_train[comp_attr]))
@@ -192,7 +192,7 @@ def load_iid(num_clients, b_size, sens_attr, comp_attr, dataset, cluster):
         for i in dic:
             print(i)
             df_train = pd.read_csv(path + f"train_{i}.csv")
-            df_test = pd.read_csv(path + f"train_{i}.csv")
+            df_test = pd.read_csv(path + f"test_{i}.csv")
 
             sensitive_attributes_list = np.array(list(df_train[sens_attr]))
             comp_attributes_list = np.array(list(df_train[comp_attr]))

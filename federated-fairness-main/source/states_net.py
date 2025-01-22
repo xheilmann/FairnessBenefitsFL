@@ -72,20 +72,20 @@ class Net(nn.Module):
     def __init__(self, in_feat) -> None:
         super(Net, self).__init__()
         # Needs to start with input space as wide as preprocessed inputs, 123 wide including the class label
-        self.layer1 = nn.Linear(in_feat, 526, dtype=torch.float64)
+        self.layer1 = nn.Linear(in_feat, 512, dtype=torch.float64)
         self.act1 = nn.Sigmoid()
-        #self.layer2 = nn.Linear(100, 100, dtype=torch.float64)
-        #self.act2 = nn.ReLU()
-        #self.layer3 = nn.Linear(100, 50, dtype=torch.float64)
-        #self.act3 = nn.ReLU()
-        self.output = nn.Linear(526, 1, dtype=torch.float64) # ends with single output binary classifier
+#        self.layer2 = nn.Linear(100, 100, dtype=torch.float64)
+#        self.act2 = nn.ReLU()
+#        self.layer3 = nn.Linear(100, 50, dtype=torch.float64)
+#        self.act3 = nn.ReLU()
+        self.output = nn.Linear(512, 1, dtype=torch.float64) # ends with single output binary classifier
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor: 
         """ A forward pass through the network. """
         x = self.act1(self.layer1(x))
-        #x = self.act2(self.layer2(x))
-        #x = self.act3(self.layer3(x))
+#        x = self.act2(self.layer2(x))
+#        x = self.act3(self.layer3(x))
         x = self.sigmoid(self.output(x))
         return x
 
@@ -116,7 +116,6 @@ def train(net, trainloader, epochs: int, option = None, sens_att="SEX", comp_att
         with torch.no_grad():
             for p in net.parameters():
                 new_p = p - (lr*(p.grad)*risk)
-                print(new_p-p)
                 p.copy_(new_p)
             return
 
@@ -144,7 +143,6 @@ def train(net, trainloader, epochs: int, option = None, sens_att="SEX", comp_att
             outputs = net(inputs)
 
             loss = criterion(outputs.squeeze(1), labels.squeeze(1))
-            #print(inputs[0], outputs[0],labels[0])
 
             loss.backward()
             if option is not None:
@@ -188,13 +186,13 @@ def train(net, trainloader, epochs: int, option = None, sens_att="SEX", comp_att
                         subset_loss = criterion(net(inpt).squeeze(1), lbls)
                         subset_losses[s] += float(subset_loss)
                     # Calculating the key risk parameters
-                    print(subset_losses)
+                    #print(lbls, inpt, subset_loss, subset_losses)
                     risks = np.nan_to_num(np.array(subset_losses))
-                    print(f"risks:{risks}")
+                    #print(f"risks:{risks}")
                     sum_risks += risks
-                    print(f"sumrisks:{sum_risks}")
-                    risk = np.sum((np.array(option["w"]) * risks) )
-                    print(f"risk:{risk}")
+                    #print(f"sumrisks:{sum_risks}")
+                    risk = np.sum((np.array(option["w"]) * risks) / batch_size)
+                    #print(f"risk:{risk}")
                     fedminmax_manual_update(option["lr"], risk)
             else:
                 optimizer.step()
@@ -202,8 +200,6 @@ def train(net, trainloader, epochs: int, option = None, sens_att="SEX", comp_att
             epoch_loss += loss
             total += labels.size(0)
             correct += (outputs.round() == labels).sum().item()
-            print(epoch_loss, correct, total, len(trainloader.dataset))
-        print(epoch_loss, correct, total)
         epoch_loss /= len(trainloader.dataset)
         epoch_acc = correct / total
         print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
@@ -225,7 +221,7 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
         group_performance - a list of equalised odds measurers for each protected group given.
     """
 
-    criterion = torch.nn.BCELoss(reduction = "sum")
+    criterion = torch.nn.BCELoss(reduction="sum")
     correct, total, loss = 0, 0, 0.0
     group_performance = [[0,0,0,0] for label in range(len(sensitive_labels))] # preset for EOP calc, will store the performance
     group_fairness = [0 for label in range(len(sensitive_labels))] # preset for EOP calc, will store the performance
@@ -251,8 +247,6 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
             outputs = net(inputs)
             loss += criterion(outputs.squeeze(1), labels.squeeze(1)).item()
             predicted = outputs.round()
-            #print(inputs[0], outputs[0], predicted[0], labels[0])
-
             # Comparing the predicted to the inputs in order to determine EOD
             matched = (predicted == labels)
             matched=torch.flatten(matched)
@@ -260,11 +254,11 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
             l=0
             for label in sensitive_labels:
 
-                lab = (predicted == float(label[0]))
+                lab = (predicted == label[0])
                 lab=torch.flatten(lab)
                 lab1= (sex == label[1])
                 labelled = (lab == lab1) * (lab1 == True)
-                nlab = (predicted  == float(label[0]))
+                nlab = (predicted == label[0])
                 nlab=torch.flatten(nlab)
                 nlab1 = (sex != label[1])
                 not_labelled = (nlab == nlab1) * (nlab1 == True)
@@ -277,11 +271,11 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
             correct += matched.sum().item()
             l = 0
             for label in sensitive_labels:
-                lab = (predicted  == label[0])
+                lab = (predicted == label[0])
                 lab = torch.flatten(lab)
                 lab1 = (comp == label[1])
                 labelled = (lab == lab1) * (lab1 == True)
-                nlab = (predicted  == label[0])
+                nlab = (predicted == label[0])
                 nlab = torch.flatten(nlab)
                 nlab1 = (comp != label[1])
                 not_labelled = (nlab == nlab1) * (nlab1 == True)

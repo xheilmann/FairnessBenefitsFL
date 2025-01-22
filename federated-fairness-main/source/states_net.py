@@ -73,7 +73,7 @@ class Net(nn.Module):
         super(Net, self).__init__()
         # Needs to start with input space as wide as preprocessed inputs, 123 wide including the class label
         self.layer1 = nn.Linear(in_feat, 512, dtype=torch.float64)
-        self.act1 = nn.ReLU()
+        self.act1 = nn.Sigmoid()
 #        self.layer2 = nn.Linear(100, 100, dtype=torch.float64)
 #        self.act2 = nn.ReLU()
 #        self.layer3 = nn.Linear(100, 50, dtype=torch.float64)
@@ -221,7 +221,7 @@ def test(net, testloader, sensitive_labels=[], sens_att = "SEX", comp_att = "MAR
         group_performance - a list of equalised odds measurers for each protected group given.
     """
 
-    criterion = torch.nn.BCELoss()
+    criterion = torch.nn.BCELoss(reduction="sum")
     correct, total, loss = 0, 0, 0.0
     group_performance = [[0,0,0,0] for label in range(len(sensitive_labels))] # preset for EOP calc, will store the performance
     group_fairness = [0 for label in range(len(sensitive_labels))] # preset for EOP calc, will store the performance
